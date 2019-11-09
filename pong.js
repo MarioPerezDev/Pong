@@ -14,10 +14,10 @@ class Rectangle{
 	}
 
 	get left(){
-		return this.position.x;
+		return this.position.x - this.size.x/2;
 	}
 	get top(){
-		return this.position.y;
+		return this.position.y - this.size.y/2;
 	}
 	get right(){
 		return this.position.x + this.size.x;
@@ -52,8 +52,8 @@ class Pong {
 		this.ball.position.x=100;
 		this.ball.position.y=100;
 
-		this.ball.velocity.x = 120;
-		this.ball.velocity.y = 120;
+		this.ball.velocity.x = 150;
+		this.ball.velocity.y = 150;
 
 		this.players = [
 			new Player,
@@ -94,9 +94,9 @@ class Pong {
 		this.ball.position.x += this.ball.velocity.x * dt;
 		this.ball.position.y += this.ball.velocity.y * dt;
 
-		if(this.ball.left < 0 || this.ball.right > this._canvas.width)
+		if(this.ball.left < 0 || this.ball.right > this._canvas.width + this.ball.size.x/2)
 			this.ball.velocity.x = -this.ball.velocity.x;
-		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height)
+		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height + this.ball.size.y/2)
 			this.ball.velocity.y = -this.ball.velocity.y;
 		this.draw();
 
