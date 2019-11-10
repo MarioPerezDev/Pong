@@ -51,11 +51,11 @@ class Pong {
 		this._context = canvas.getContext("2d");
 
 		this.ball = new Ball;
-		this.ball.position.x= 40//this._canvas.width/2;
-		this.ball.position.y= 100 //this._canvas.height/2;
+		this.ball.position.x= this._canvas.width/2;
+		this.ball.position.y= this._canvas.height/2;
 
-		this.ball.velocity.x = 0;
-		this.ball.velocity.y = 100;
+		this.ball.velocity.x = 180;
+		this.ball.velocity.y = 180;
 
 		this.players = [
 			new Player,
@@ -101,8 +101,15 @@ class Pong {
      	return false;
 	}
 
-	moveUp(player){
-		
+	enemyMove(){
+		if(this.ball.position.y < this.players[1].top){
+		this.players[1].movingdown=false;
+		this.players[1].movingup=true;
+	}
+		if(this.ball.position.y > this.players[1].bottom){
+		this.players[1].movingup=false;
+		this.players[1].movingdown=true;
+	}
 	}
 
 	update(dt){
@@ -113,6 +120,11 @@ class Pong {
 			this.players[0].position.y -=5;
 		if(this.players[0].bottom <  this._canvas.height && this.players[0].movingdown)
 			this.players[0].position.y +=5;
+
+		if(this.players[1].top > 0 && this.players[1].movingup)
+			this.players[1].position.y -=3;
+		if(this.players[1].bottom <  this._canvas.height && this.players[1].movingdown)
+			this.players[1].position.y +=3;
 
 		if(this.ball.left < 0 || this.ball.right > this._canvas.width)
 			this.ball.velocity.x = -this.ball.velocity.x;
@@ -126,6 +138,7 @@ class Pong {
 			}
 		})
 		this.draw();
+		this.enemyMove();
 	}
 }
 
