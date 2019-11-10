@@ -40,6 +40,8 @@ class Player extends Rectangle{
 	constructor(){
 		super(20,90)
 		this.score=0;
+		this.movingup=false;
+		this.movingdown=false
 	}
 }
 
@@ -49,11 +51,11 @@ class Pong {
 		this._context = canvas.getContext("2d");
 
 		this.ball = new Ball;
-		this.ball.position.x=20;
-		this.ball.position.y=200;
+		this.ball.position.x= 40//this._canvas.width/2;
+		this.ball.position.y= 100 //this._canvas.height/2;
 
-		this.ball.velocity.x = 100;
-		this.ball.velocity.y = 0;
+		this.ball.velocity.x = 0;
+		this.ball.velocity.y = 100;
 
 		this.players = [
 			new Player,
@@ -91,17 +93,26 @@ class Pong {
 	}
 
 	checkHit(player,ball){
-		if(player.right > ball.left &&
-     		player.left < ball.right &&
-     		player.bottom > ball.top &&
-     		player.top < ball.bottom )
+		if(player.right >= ball.left &&
+     		player.left <= ball.right &&
+     		player.bottom >= ball.top &&
+     		player.top <= ball.bottom )
      	return true;
      	return false;
+	}
+
+	moveUp(player){
+		
 	}
 
 	update(dt){
 		this.ball.position.x += this.ball.velocity.x * dt;
 		this.ball.position.y += this.ball.velocity.y * dt;
+
+		if(this.players[0].top > 0 && this.players[0].movingup)
+			this.players[0].position.y -=5;
+		if(this.players[0].bottom <  this._canvas.height && this.players[0].movingdown)
+			this.players[0].position.y +=5;
 
 		if(this.ball.left < 0 || this.ball.right > this._canvas.width)
 			this.ball.velocity.x = -this.ball.velocity.x;
@@ -120,3 +131,18 @@ class Pong {
 
 const canvas = document.getElementById("pong");
 const pong = new Pong(canvas);
+
+
+document.addEventListener('keydown', (event) =>{
+	if(event.keyCode === 38)
+		pong.players[0].movingup=true;
+  	if(event.keyCode === 40)
+  		pong.players[0].movingdown=true;
+})
+
+document.addEventListener('keyup', (event) =>{
+	if(event.keyCode === 38)
+   		pong.players[0].movingup=false;
+  	if(event.keyCode === 40)
+  		pong.players[0].movingdown=false;
+})
