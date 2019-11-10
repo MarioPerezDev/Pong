@@ -20,10 +20,10 @@ class Rectangle{
 		return this.position.y - this.size.y/2;
 	}
 	get right(){
-		return this.position.x + this.size.x;
+		return this.position.x + this.size.x/2;
 	}
 	get bottom(){
-		return this.position.y + this.size.y;
+		return this.position.y + this.size.y/2;
 	}
 }
 
@@ -49,11 +49,11 @@ class Pong {
 		this._context = canvas.getContext("2d");
 
 		this.ball = new Ball;
-		this.ball.position.x=100;
-		this.ball.position.y=100;
+		this.ball.position.x=20;
+		this.ball.position.y=200;
 
-		this.ball.velocity.x = 150;
-		this.ball.velocity.y = 150;
+		this.ball.velocity.x = 100;
+		this.ball.velocity.y = 0;
 
 		this.players = [
 			new Player,
@@ -90,16 +90,31 @@ class Pong {
 		this._context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
 	}
 
+	checkHit(player,ball){
+		if(player.right > ball.left &&
+     		player.left < ball.right &&
+     		player.bottom > ball.top &&
+     		player.top < ball.bottom )
+     	return true;
+     	return false;
+	}
+
 	update(dt){
 		this.ball.position.x += this.ball.velocity.x * dt;
 		this.ball.position.y += this.ball.velocity.y * dt;
 
-		if(this.ball.left < 0 || this.ball.right > this._canvas.width + this.ball.size.x/2)
+		if(this.ball.left < 0 || this.ball.right > this._canvas.width)
 			this.ball.velocity.x = -this.ball.velocity.x;
-		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height + this.ball.size.y/2)
-			this.ball.velocity.y = -this.ball.velocity.y;
-		this.draw();
+		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height)
+			this.ball.velocity.y = -this.ball.velocity.y
 
+		this.players.forEach(player => {
+			if(this.checkHit(player,this.ball)){
+			this.ball.velocity.x = -this.ball.velocity.x;
+			this.ball.velocity.y = -this.ball.velocity.y;
+			}
+		})
+		this.draw();
 	}
 }
 
