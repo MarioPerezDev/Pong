@@ -134,7 +134,6 @@ class Pong {
 		this.players.forEach(player => {
 			if(this.checkHit(player,this.ball)){
 			this.ball.velocity.x = -this.ball.velocity.x;
-			this.ball.velocity.y = -this.ball.velocity.y;
 			}
 		})
 		this.draw();
