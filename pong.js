@@ -51,11 +51,6 @@ class Pong {
 		this._context = canvas.getContext("2d");
 
 		this.ball = new Ball;
-		this.ball.position.x= this._canvas.width/2;
-		this.ball.position.y= this._canvas.height/2;
-
-		this.ball.velocity.x = 180;
-		this.ball.velocity.y = 180;
 
 		this.players = [
 			new Player,
@@ -77,6 +72,7 @@ class Pong {
 			requestAnimationFrame(callback);
 		}
 		callback();
+		this.reset();
 	}
 
 	draw(){
@@ -111,23 +107,41 @@ class Pong {
 		this.players[1].movingdown=true;
 	}
 	}
+	reset(){
+			this.ball.position.x= this._canvas.width/2;
+			this.ball.position.y= this._canvas.height/2;
+
+			this.ball.velocity.x = 0;
+			this.ball.velocity.y = 0;
+		}
+
+	startGame(){
+		this.ball.velocity.x = 180;
+		this.ball.velocity.y = 180;
+	}
 
 	update(dt){
 		this.ball.position.x += this.ball.velocity.x * dt;
 		this.ball.position.y += this.ball.velocity.y * dt;
 
+		//Player paddle movement
 		if(this.players[0].top > 0 && this.players[0].movingup)
 			this.players[0].position.y -=5;
 		if(this.players[0].bottom <  this._canvas.height && this.players[0].movingdown)
 			this.players[0].position.y +=5;
 
+		//IA paddle movement
 		if(this.players[1].top > 0 && this.players[1].movingup)
-			this.players[1].position.y -=3;
+			this.players[1].position.y -=2;
 		if(this.players[1].bottom <  this._canvas.height && this.players[1].movingdown)
-			this.players[1].position.y +=3;
+			this.players[1].position.y +=2;
 
-		if(this.ball.left < 0 || this.ball.right > this._canvas.width)
-			this.ball.velocity.x = -this.ball.velocity.x;
+		//Ball collision with walls, also score
+		if(this.ball.left < 0 || this.ball.right > this._canvas.width){
+			let playerId = this.ball.velocity.x < 0? 1 : 0;
+			this.players[playerId].score++;
+			this.reset();
+		}
 		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height)
 			this.ball.velocity.y = -this.ball.velocity.y
 
@@ -150,6 +164,8 @@ document.addEventListener('keydown', (event) =>{
 		pong.players[0].movingup=true;
   	if(event.keyCode === 40)
   		pong.players[0].movingdown=true;
+  	if(event.keyCode === 32)
+  		pong.startGame();
 })
 
 document.addEventListener('keyup', (event) =>{
@@ -158,3 +174,4 @@ document.addEventListener('keyup', (event) =>{
   	if(event.keyCode === 40)
   		pong.players[0].movingdown=false;
 })
+
