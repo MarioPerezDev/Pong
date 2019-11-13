@@ -116,8 +116,10 @@ class Pong {
 		}
 
 	startGame(){
-		this.ball.velocity.x = 180;
-		this.ball.velocity.y = 180;
+ if(this.ball.velocity.x ===0 && this.ball.velocity.y ===0){
+		this.ball.velocity.x = 200 * (Math.random() < 0.5 ?  1 : -1);
+		this.ball.velocity.y = 200 * (Math.random() * 2 -1);
+	}
 	}
 
 	update(dt){
@@ -174,4 +176,3 @@ document.addEventListener('keyup', (event) =>{
   	if(event.keyCode === 40)
   		pong.players[0].movingdown=false;
 })
-
