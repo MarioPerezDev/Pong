@@ -4,6 +4,14 @@ class Vector{
 		this.x = x;
 		this.y = y;
 	}
+	get len(){
+		return Math.sqrt(this.x * this.x + this.y * this.y)
+	}
+	set len(value){
+		const fact = value/this.len;
+		this.x *= fact;
+		this.y *= fact;
+	}
 }
 
 //Defines the Rectangle class that will be used to pring the players and the ball
@@ -119,6 +127,7 @@ class Pong {
  if(this.ball.velocity.x ===0 && this.ball.velocity.y ===0){
 		this.ball.velocity.x = 200 * (Math.random() < 0.5 ?  1 : -1);
 		this.ball.velocity.y = 200 * (Math.random() * 2 -1);
+		this.ball.velocity.len = 200;
 	}
 	}
 
@@ -147,9 +156,11 @@ class Pong {
 		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height)
 			this.ball.velocity.y = -this.ball.velocity.y
 
+		//Any player hits the ball
 		this.players.forEach(player => {
 			if(this.checkHit(player,this.ball)){
 			this.ball.velocity.x = -this.ball.velocity.x;
+			this.ball.velocity.len *= 1.1;
 			}
 		})
 		this.draw();
