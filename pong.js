@@ -90,13 +90,23 @@ class Pong {
 		//Draw gamescene
 		this._context.fillStyle = "#000"
 		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+
 		if(!this.started){
+
 			this._context.font = "30px Nova Square";
 			this._context.fillStyle = "#FFFF";
-			this._context.fillText("Press SPACE to play the game",80, this._canvas.height/2);
+			this._context.fillText("Press SPACE to play the game",this._canvas.width/2, this._canvas.height/2);
+			this._context.textAlign = "center";
 		}
 		else{
-  	//Draw players, ball and score
+  	//Draw players, net, ball and score
+		this._context.beginPath();
+		this._context.setLineDash([5,10]);
+		this._context.moveTo(this._canvas.width/2, 10);
+		this._context.lineTo(this._canvas.width/2, this._canvas.height - 10);
+		this._context.strokeStyle = "#FFFF";
+		this._context.stroke();
+
 		this.drawRectangle(this.ball);
 		this.players.forEach((player,index) => {
 			this.drawRectangle(player);
@@ -105,7 +115,8 @@ class Pong {
 		if(this.ball.velocity.len===0){
 		this._context.font = "15px Nova Square";
 		this._context.fillStyle = "#FFFF";
-		this._context.fillText("Press SPACE to start the round",180, this._canvas.height/2 + 40);
+		this._context.fillText("Press SPACE to start the round",this._canvas.width/2, this._canvas.height/2 + 40);
+		this._context.textAlign = "center";
 	}}
 	}
 
@@ -116,15 +127,15 @@ class Pong {
 
 	drawScore(index){
 		let coords = [
-			{x:150,
+			{x:this._canvas.width/3,
 			y:60},
-			{x:400,
+			{x:this._canvas.width - this._canvas.width/3,
 			y:60}
 		];
 		let score = this.players[index].score;
 		this._context.font = "60px Nova Square";
 		this._context.fillStyle = "#FFFF";
-		this._context.fillText(score, coords[index].x, coords[index].y);
+		this._context.fillText(score, coords[index].x, 60);
 	}
 
 	drawEnd(playerId){
@@ -132,8 +143,9 @@ class Pong {
 
 		this._context.font = "30px Nova Square";
 		this._context.fillStyle = "#FFFF";
-		this._context.fillText(message[playerId],100, this._canvas.height/2 - 40);
-		this._context.fillText("Press R to play again",140, this._canvas.height/2);
+		this._context.fillText(message[playerId],this._canvas.width/2, this._canvas.height/2 - 40);
+		this._context.fillText("Press R to play again",this._canvas.width/2, this._canvas.height/2);
+		this._context.textAlign = "center";
 
 	}
 
@@ -195,9 +207,9 @@ class Pong {
 
 		//IA paddle movement
 		if(this.players[1].top > 0 && this.players[1].movingup)
-			this.players[1].position.y -=2;
+			this.players[1].position.y -=3;
 		if(this.players[1].bottom <  this._canvas.height && this.players[1].movingdown)
-			this.players[1].position.y +=2;
+			this.players[1].position.y +=3;
 
 		//Ball collision with walls, also score
 		if(this.ball.left < 0 || this.ball.right > this._canvas.width){
@@ -206,6 +218,7 @@ class Pong {
 			this.reset();
 		}
 		else{
+			this.players[playerId].score++;
 			this.finished=true;
 			}
 		}
@@ -216,7 +229,11 @@ class Pong {
 		this.players.forEach((player,index) => {
 			if(this.checkHit(player,this.ball)){
 			this.ball.velocity.x = -this.ball.velocity.x;
-			this.ball.velocity.len *= 1.1;
+			this.ball.velocity.len *= 1.05;
+			if(player.movingdown)
+			this.ball.velocity.y = 1.3 * Math.abs(this.ball.velocity.y);
+			if(player.movingup)
+			this.ball.velocity.y = -1.3 * Math.abs(this.ball.velocity.y);
 			}
 		})
 
