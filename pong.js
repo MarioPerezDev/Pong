@@ -88,12 +88,28 @@ class Pong {
 		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
 		this.drawRectangle(this.ball);
-		this.players.forEach(player => this.drawRectangle(player));
+		this.players.forEach((player,index) => {
+			this.drawRectangle(player);
+			this.drawScore(index);
+		})
 	}
 
 	drawRectangle(rectangle){
 		this._context.fillStyle = "#fff"
 		this._context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
+	}
+
+	drawScore(index){
+		let coords = [
+			{x:150,
+			y:60},
+			{x:400,
+			y:60}
+		];
+		let score = this.players[index].score;
+		this._context.font = "60px Nova Square";
+		this._context.fillStyle = "#FFFF";
+		this._context.fillText(score, coords[index].x, coords[index].y);
 	}
 
 	checkHit(player,ball){
@@ -157,19 +173,23 @@ class Pong {
 			this.ball.velocity.y = -this.ball.velocity.y
 
 		//Any player hits the ball
-		this.players.forEach(player => {
+		this.players.forEach((player,index) => {
 			if(this.checkHit(player,this.ball)){
 			this.ball.velocity.x = -this.ball.velocity.x;
 			this.ball.velocity.len *= 1.1;
 			}
 		})
-		this.draw();
+
 		this.enemyMove();
+		this.draw();
+
 	}
 }
 
 const canvas = document.getElementById("pong");
 const pong = new Pong(canvas);
+
+
 
 
 document.addEventListener('keydown', (event) =>{
