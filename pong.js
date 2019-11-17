@@ -60,6 +60,9 @@ class Pong {
 
 		this.ball = new Ball;
 
+		this.started=false;
+		this.finished=false;
+
 		this.players = [
 			new Player,
 			new Player, ];
@@ -84,14 +87,26 @@ class Pong {
 	}
 
 	draw(){
+		//Draw gamescene
 		this._context.fillStyle = "#000"
 		this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-
+		if(!this.started){
+			this._context.font = "30px Nova Square";
+			this._context.fillStyle = "#FFFF";
+			this._context.fillText("Press SPACE to play the game",80, this._canvas.height/2);
+		}
+		else{
+  	//Draw players, ball and score
 		this.drawRectangle(this.ball);
 		this.players.forEach((player,index) => {
 			this.drawRectangle(player);
 			this.drawScore(index);
 		})
+		if(this.ball.velocity.len===0){
+		this._context.font = "15px Nova Square";
+		this._context.fillStyle = "#FFFF";
+		this._context.fillText("Press SPACE to start the round",180, this._canvas.height/2 + 40);
+	}}
 	}
 
 	drawRectangle(rectangle){
@@ -110,6 +125,16 @@ class Pong {
 		this._context.font = "60px Nova Square";
 		this._context.fillStyle = "#FFFF";
 		this._context.fillText(score, coords[index].x, coords[index].y);
+	}
+
+	drawEnd(playerId){
+		let message = ["Congratulations, you defeated the IA!","IA defeated you, try again!" ]
+
+		this._context.font = "30px Nova Square";
+		this._context.fillStyle = "#FFFF";
+		this._context.fillText(message[playerId],100, this._canvas.height/2 - 40);
+		this._context.fillText("Press R to play again",140, this._canvas.height/2);
+
 	}
 
 	checkHit(player,ball){
@@ -140,14 +165,25 @@ class Pong {
 		}
 
 	startGame(){
+		this.started=true;
  if(this.ball.velocity.x ===0 && this.ball.velocity.y ===0){
 		this.ball.velocity.x = 200 * (Math.random() < 0.5 ?  1 : -1);
 		this.ball.velocity.y = 200 * (Math.random() * 2 -1);
 		this.ball.velocity.len = 200;
 	}
 	}
+	resetGame(){
+		this.reset();
+		console.log("game reseted")
+		this.started=false;
+		this.finished=false;
+		this.players.forEach(player =>
+		player.score = 0);
+	}
 
 	update(dt){
+		var playerId = this.ball.velocity.x < 0? 1 : 0;
+		if(!this.finished){
 		this.ball.position.x += this.ball.velocity.x * dt;
 		this.ball.position.y += this.ball.velocity.y * dt;
 
@@ -165,9 +201,13 @@ class Pong {
 
 		//Ball collision with walls, also score
 		if(this.ball.left < 0 || this.ball.right > this._canvas.width){
-			let playerId = this.ball.velocity.x < 0? 1 : 0;
+			if(this.players[playerId].score < 2){
 			this.players[playerId].score++;
 			this.reset();
+		}
+		else{
+			this.finished=true;
+			}
 		}
 		if(this.ball.top < 0 || this.ball.bottom > this._canvas.height)
 			this.ball.velocity.y = -this.ball.velocity.y
@@ -182,7 +222,10 @@ class Pong {
 
 		this.enemyMove();
 		this.draw();
-
+	}
+	else{
+		this.drawEnd(playerId)
+	}
 	}
 }
 
@@ -195,15 +238,17 @@ const pong = new Pong(canvas);
 document.addEventListener('keydown', (event) =>{
 	if(event.keyCode === 38)
 		pong.players[0].movingup=true;
-  	if(event.keyCode === 40)
-  		pong.players[0].movingdown=true;
-  	if(event.keyCode === 32)
-  		pong.startGame();
+  if(event.keyCode === 40)
+  	pong.players[0].movingdown=true;
+  if(event.keyCode === 32)
+  	pong.startGame();
+	if(event.keyCode === 82)
+	 	pong.resetGame();
 })
 
 document.addEventListener('keyup', (event) =>{
 	if(event.keyCode === 38)
    		pong.players[0].movingup=false;
-  	if(event.keyCode === 40)
+  if(event.keyCode === 40)
   		pong.players[0].movingdown=false;
 })
