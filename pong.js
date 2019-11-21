@@ -93,7 +93,7 @@ class Pong {
 
 		if(!this.started){
 
-			this._context.font = "30px Nova Square";
+			this._context.font = "30px Alata";
 			this._context.fillStyle = "#FFFF";
 			this._context.fillText("Press SPACE to play the game",this._canvas.width/2, this._canvas.height/2);
 			this._context.textAlign = "center";
@@ -113,7 +113,7 @@ class Pong {
 			this.drawScore(index);
 		})
 		if(this.ball.velocity.len===0){
-		this._context.font = "15px Nova Square";
+		this._context.font = "15px Alata";
 		this._context.fillStyle = "#FFFF";
 		this._context.fillText("Press SPACE to start the round",this._canvas.width/2, this._canvas.height/2 + 40);
 		this._context.textAlign = "center";
@@ -133,7 +133,7 @@ class Pong {
 			y:60}
 		];
 		let score = this.players[index].score;
-		this._context.font = "60px Nova Square";
+		this._context.font = "60px Alata";
 		this._context.fillStyle = "#FFFF";
 		this._context.fillText(score, coords[index].x, 60);
 	}
@@ -141,7 +141,7 @@ class Pong {
 	drawEnd(playerId){
 		let message = ["Congratulations, you defeated the IA!","IA defeated you, try again!" ]
 
-		this._context.font = "30px Nova Square";
+		this._context.font = "30px Alata";
 		this._context.fillStyle = "#FFFF";
 		this._context.fillText(message[playerId],this._canvas.width/2, this._canvas.height/2 - 40);
 		this._context.fillText("Press R to play again",this._canvas.width/2, this._canvas.height/2);
@@ -233,10 +233,16 @@ class Pong {
 			if(this.checkHit(player,this.ball)){
 			this.ball.velocity.x = -this.ball.velocity.x;
 			this.ball.velocity.len *= 1.05;
-			if(player.movingdown)
-			this.ball.velocity.y = 1.3 * Math.abs(this.ball.velocity.y);
-			if(player.movingup)
-			this.ball.velocity.y = -1.3 * Math.abs(this.ball.velocity.y);
+			if(player.movingdown){
+				if(this.ball.velocity.y < 100)
+					this.ball.velocity.y = 100
+				this.ball.velocity.y = 1.3 * Math.abs(this.ball.velocity.y);
+			}
+			if(player.movingup){
+					if(this.ball.velocity.y < 100)
+						this.ball.velocity.y = 100
+					this.ball.velocity.y = -1.3 * Math.abs(this.ball.velocity.y);
+		}
 			}
 		})
 
@@ -256,9 +262,9 @@ const pong = new Pong(canvas);
 
 
 document.addEventListener('keydown', (event) =>{
-	if(event.keyCode === 38)
+	if(event.keyCode === 38 && pong.started)
 		pong.players[0].movingup=true;
-  if(event.keyCode === 40)
+  if(event.keyCode === 40 && pong.started)
   	pong.players[0].movingdown=true;
   if(event.keyCode === 32)
   	pong.startGame();
